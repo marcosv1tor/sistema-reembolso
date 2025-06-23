@@ -319,14 +319,6 @@ docker-compose ps
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-## 📞 Suporte
-
-Para suporte técnico:
-
-- 📧 Email: suporte@reembolso.com
-- 📱 Slack: #reembolso-dev
-- 📖 Wiki: [Link para documentação interna]
-
 ## 🔄 Changelog
 
 ### v1.0.0 (2024-01-XX)
