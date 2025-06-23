@@ -1,0 +1,52 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reembolso.Shared", "src\Shared\Reembolso.Shared\Reembolso.Shared.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reembolso.Usuarios.API", "src\Services\Usuarios\Reembolso.Usuarios.API\Reembolso.Usuarios.API.csproj", "{6CF1481B-D8A5-43FE-A7EA-4437C36C3C00}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reembolso.Funcionarios.API", "src\Services\Funcionarios\Reembolso.Funcionarios.API\Reembolso.Funcionarios.API.csproj", "{CDE996AE-8A75-4D12-88CA-AFA64DEB507A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reembolso.SolicitacoesReembolso.API", "src\Services\SolicitacoesReembolso\Reembolso.SolicitacoesReembolso.API\Reembolso.SolicitacoesReembolso.API.csproj", "{90DB0CA7-B654-4EA3-A4D9-9CA82B089711}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reembolso.Relatorios.API", "src\Services\Relatorios\Reembolso.Relatorios.API\Reembolso.Relatorios.API.csproj", "{D849F7B2-B52A-446E-B19E-883CE505EE55}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{87BE8094-77FF-40B9-8C34-81A6CC463CB2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{A51CFEAD-73D6-4F6F-AE3E-21F2682004C9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CF1481B-D8A5-43FE-A7EA-4437C36C3C00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CF1481B-D8A5-43FE-A7EA-4437C36C3C00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CF1481B-D8A5-43FE-A7EA-4437C36C3C00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CF1481B-D8A5-43FE-A7EA-4437C36C3C00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDE996AE-8A75-4D12-88CA-AFA64DEB507A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE996AE-8A75-4D12-88CA-AFA64DEB507A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDE996AE-8A75-4D12-88CA-AFA64DEB507A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE996AE-8A75-4D12-88CA-AFA64DEB507A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90DB0CA7-B654-4EA3-A4D9-9CA82B089711}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90DB0CA7-B654-4EA3-A4D9-9CA82B089711}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90DB0CA7-B654-4EA3-A4D9-9CA82B089711}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90DB0CA7-B654-4EA3-A4D9-9CA82B089711}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D849F7B2-B52A-446E-B19E-883CE505EE55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D849F7B2-B52A-446E-B19E-883CE505EE55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D849F7B2-B52A-446E-B19E-883CE505EE55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D849F7B2-B52A-446E-B19E-883CE505EE55}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12345678-1234-1234-1234-123456789012}
+	EndGlobalSection
+EndGlobal

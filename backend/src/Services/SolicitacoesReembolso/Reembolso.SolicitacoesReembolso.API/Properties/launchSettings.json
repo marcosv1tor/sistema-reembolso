@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Reembolso.SolicitacoesReembolso.API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:54012;http://localhost:54016"
+    }
+  }
+}

@@ -1,0 +1,279 @@
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL
+  postgres:
+    image: postgres:15
+    container_name: reembolso_postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: reembolso_user
+      POSTGRES_PASSWORD: ReembolsoPass123!
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # API Gateway (Nginx)
+  api-gateway:
+    image: nginx:alpine
+    container_name: reembolso-gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - usuarios-api
+      - funcionarios-api
+      - solicitacoes-api
+      - relatorios-api
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+
+  # Microserviço de Usuários
+  usuarios-api:
+    build:
+      context: .
+      dockerfile: src/Services/Usuarios/Reembolso.Usuarios.API/Dockerfile
+    container_name: reembolso-usuarios-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=reembolso_usuarios;Username=reembolso_user;Password=ReembolsoPass123!;
+      - JwtSettings__SecretKey=producao-chave-secreta-super-segura-com-pelo-menos-32-caracteres-para-jwt
+      - JwtSettings__Issuer=ReembolsoAPI
+      - JwtSettings__Audience=ReembolsoClients
+    ports:
+      - "5001:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Microserviço de Funcionários
+  funcionarios-api:
+    build:
+      context: .
+      dockerfile: src/Services/Funcionarios/Reembolso.Funcionarios.API/Dockerfile
+    container_name: reembolso-funcionarios-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=reembolso_funcionarios;Username=reembolso_user;Password=ReembolsoPass123!;
+      - JwtSettings__SecretKey=producao-chave-secreta-super-segura-com-pelo-menos-32-caracteres-para-jwt
+      - JwtSettings__Issuer=ReembolsoAPI
+      - JwtSettings__Audience=ReembolsoClients
+    ports:
+      - "5002:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Microserviço de Solicitações de Reembolso
+  solicitacoes-api:
+    build:
+      context: .
+      dockerfile: src/Services/SolicitacoesReembolso/Reembolso.SolicitacoesReembolso.API/Dockerfile
+    container_name: reembolso-solicitacoes-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=reembolso_solicitacoes;Username=reembolso_user;Password=ReembolsoPass123!;
+      - JwtSettings__SecretKey=producao-chave-secreta-super-segura-com-pelo-menos-32-caracteres-para-jwt
+      - JwtSettings__Issuer=ReembolsoAPI
+      - JwtSettings__Audience=ReembolsoClients
+      - MicroservicesUrls__UsuariosAPI=http://usuarios-api:8080
+      - MicroservicesUrls__FuncionariosAPI=http://funcionarios-api:8080
+    ports:
+      - "5003:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      usuarios-api:
+        condition: service_healthy
+      funcionarios-api:
+        condition: service_healthy
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Microserviço de Relatórios
+  relatorios-api:
+    build:
+      context: .
+      dockerfile: src/Services/Relatorios/Reembolso.Relatorios.API/Dockerfile
+    container_name: reembolso-relatorios-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=reembolso_relatorios;Username=reembolso_user;Password=ReembolsoPass123!;
+      - JwtSettings__SecretKey=producao-chave-secreta-super-segura-com-pelo-menos-32-caracteres-para-jwt
+      - JwtSettings__Issuer=ReembolsoAPI
+      - JwtSettings__Audience=ReembolsoClients
+      - MicroservicesUrls__UsuariosAPI=http://usuarios-api:8080
+      - MicroservicesUrls__FuncionariosAPI=http://funcionarios-api:8080
+      - MicroservicesUrls__SolicitacoesReembolsoAPI=http://solicitacoes-api:8080
+    ports:
+      - "5004:8080"
+    volumes:
+      - relatorios_data:/app/wwwroot/relatorios
+    depends_on:
+      postgres:
+        condition: service_healthy
+      usuarios-api:
+        condition: service_healthy
+      funcionarios-api:
+        condition: service_healthy
+      solicitacoes-api:
+        condition: service_healthy
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis para cache (opcional)
+  redis:
+    image: redis:7-alpine
+    container_name: reembolso-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Elasticsearch para logs centralizados (opcional)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: reembolso-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Kibana para visualização de logs (opcional)
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: reembolso-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+
+  # Prometheus para métricas (opcional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: reembolso-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+
+  # Grafana para dashboards (opcional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: reembolso-grafana
+    ports:
+      - "3001:3000"  # Mudança: usar porta 3001 em vez de 3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - reembolso-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  relatorios_data:
+    driver: local
+  redis_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  reembolso-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
